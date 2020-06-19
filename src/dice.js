@@ -30,7 +30,7 @@ function NewGameButton(props) {
 
 function ScoreRow(props) {
     return (
-        <tr className={"score-completed-" + props.data.scored}>
+        <tr>
             <td>{props.data.score_name}</td>
             <td onClick={() => props.onClick()}>{props.data.value}</td>
         </tr>
@@ -40,7 +40,6 @@ function ScoreRow(props) {
 class ScoreType {
 
     score_name = "";
-    value = " ";
 
     constructor() {
         if (this.constructor == ScoreType) {
@@ -56,30 +55,25 @@ class ScoreType {
 class YahtzeeScore extends ScoreType {
 
     score_name = "Yahtzee";
-    scored = false;
 
     getScore(diceValues) {
         console.log("yaaahh");
         console.log(diceValues);
         let unique = new Set(diceValues);
         if (unique.size == 1) {
-            this.value = 50;
-        } else {
-            this.value = 0;
+            return 50;
         }
-        this.scored = true;
+        return 0;
     }
 }
 class ChanceScore extends ScoreType {
 
     score_name = "Chance";
-    scored = false;
 
     getScore(diceValues) {
         console.log("calculate score");
         console.log(diceValues);
-        this.value = diceValues.reduce((x, y) => x + y);
-        this.scored = true;
+        return diceValues.reduce((x, y) => x + y);
     }
 
 }
@@ -90,18 +84,21 @@ class DiceScores {
             "chance": new ChanceScore()
         };
     }
+    getNames() {
+        return Object.keys(this.score_set);
+    }
 }
 
 class GameArea extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dice: Array(5).fill().map(() => ({ "value": "-", "hold": false })),
-            rollNumber: 0,
-            scores: new DiceScores()
+            dice: Array(5).fill().map(() => ({ "value": this.randomRoll(), "hold": false })),
+            rollNumber: 1,
+            score_refs: new DiceScores(),
+            scores: {}
         };
-        //this.generateRoll();
-        console.log(this.state.scores);
+        Object.values(this.state.score_refs.getNames()).map((score) => this.state.scores[score] = " ");
     }
 
 
@@ -147,8 +144,20 @@ class GameArea extends React.Component {
     }
 
     newGame() {
-        this.state.rollNumber = 0;
         this.generateRoll();
+        let dice = this.state.dice.slice();
+        dice = dice.map(
+            (item) => {
+                item.hold = false;
+                return item;
+            });
+        this.setState(
+            {
+                scores: Object.values(this.state.scores).map((score) => " "),
+                dice: dice,
+                rollNumber: 1
+            }
+        )
     }
 
     renderNewGameButton() {
@@ -158,18 +167,22 @@ class GameArea extends React.Component {
     }
 
     updateScore(func, diceVals) {
-        return func(diceVals);
+        func(diceVals);
     }
 
     renderScore(score) {
-        console.log(this.state.scores.score_set[score]);
-        let score_data = this.state.scores.score_set[score];
         let dice_vals = this.state.dice.slice().map(
             (die) => die.value
         );
+        console.log("rendereing");
+        let data = {
+            score_name: score,
+            value: this.state.scores[score]
+        }
+        console.log(this.state.score_refs.score_set[score]);
         return <ScoreRow
-            data={score_data} // TODO: how much need we pass?
-            onClick={() => score_data.getScore(dice_vals)}
+            data={data} 
+            onClick={() => this.state.score_refs.score_set[score].getScore(dice_vals)}
         />;
     }
 

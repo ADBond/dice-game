@@ -64,12 +64,31 @@ class ScoreType {
         throw new Error("Must override getScore method");
     }
 
+    // TODO: not sure if this class is the best place for all these utilities
     static getCounts(diceValues) {
         let counts = Array(6).fill(0);
         diceValues.forEach((die) => counts[die - 1]++);
         return counts;
     }
 
+    static getCountVals(diceValues) {
+        let counts = ScoreType.getCounts(diceValues);
+        let countVals = [...new Set(counts)];
+        countVals.sort();
+        return countVals;
+    }
+
+    static diceSum(diceValues) {
+        return diceValues.reduce((x, y) => x + y);
+    }
+
+    // how often does the most often number appear?
+    static mostNumerous(diceValues) {
+        let counts = ScoreType.getCountVals(diceValues);
+        return counts.reduce(
+            (x, y) => Math.max(x, y)
+        );
+    }
 }
 
 class YahtzeeScore extends ScoreType {
@@ -77,8 +96,7 @@ class YahtzeeScore extends ScoreType {
     score_name = "Yahtzee";
 
     getScore(diceValues) {
-        let unique = new Set(diceValues);
-        if (unique.size == 1) {
+        if (ScoreType.mostNumerous(diceValues) == 5) {
             return 50;
         }
         return 0;
@@ -89,7 +107,7 @@ class ChanceScore extends ScoreType {
     score_name = "Chance";
 
     getScore(diceValues) {
-        return diceValues.reduce((x, y) => x + y);
+        return ScoreType.diceSum(diceValues);
     }
 
 }
@@ -98,17 +116,35 @@ class FullHouseScore extends ScoreType {
     score_name = "Full House";
 
     getScore(diceValues) {
-        console.log("yoooo");
-        console.log(this);
-        console.log(diceValues);
-        let counts = ScoreType.getCounts(diceValues);
-        let countVals = [...new Set(counts)];
-        countVals.sort();
-        let desired = [0, 2, 3]
-        console.log(countVals);
-        console.log(desired);
+        let countVals = ScoreType.getCountVals(diceValues);
+        let desired = [0, 2, 3];  // defines full house
+        // TODO: should probably let yahtzee be a degenerate full house
         if (arraysEqual(countVals, desired)) {
             return 25;
+        }
+        return 0;
+    }
+}
+
+class ThreeKindScore extends ScoreType {
+
+    score_name = "Three of a Kind";
+
+    getScore(diceValues) {
+        if (ScoreType.mostNumerous(diceValues) >= 3) {
+            return ScoreType.diceSum(diceValues);
+        }
+        return 0;
+    }
+
+}
+class FourKindScore extends ScoreType {
+
+    score_name = "Four of a Kind";
+
+    getScore(diceValues) {
+        if (ScoreType.mostNumerous(diceValues) >= 4) {
+            return ScoreType.diceSum(diceValues);
         }
         return 0;
     }
@@ -117,6 +153,8 @@ class FullHouseScore extends ScoreType {
 class DiceScores {
     constructor() {
         this.score_set = {
+            "three_kind": new ThreeKindScore(),
+            "four_kind": new FourKindScore(),
             "full_house": new FullHouseScore(),
             "yahtzee": new YahtzeeScore(),
             "chance": new ChanceScore()

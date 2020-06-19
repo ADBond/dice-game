@@ -1,0 +1,6 @@
+/node_modules
+
+# temporarily as don't need to track changes while I'm fiddling about
+# sorry
+dice.js
+!src/dice.js

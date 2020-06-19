@@ -96,7 +96,8 @@ class GameArea extends React.Component {
             dice: Array(5).fill().map(() => ({ "value": this.randomRoll(), "hold": false })),
             rollNumber: 1,
             score_refs: new DiceScores(),
-            scores: {}
+            scores: {},
+            turnOver: false
         };
         Object.values(this.state.score_refs.getNames()).map((score) => this.state.scores[score] = " ");
     }
@@ -124,7 +125,7 @@ class GameArea extends React.Component {
     }
 
     generateRoll() {
-        if (this.state.rollNumber == 3) {
+        if (this.state.rollNumber === 3 || this.state.turnOver) {
             return
         }
         this.state.rollNumber = this.state.rollNumber + 1;  // being explicit
@@ -134,6 +135,9 @@ class GameArea extends React.Component {
                 item.value = item.hold ? item.value : this.randomRoll();
                 return item;
             });
+        if (this.state.turnOver === 3) {
+            this.state.turnOver = true;
+        }
         this.setState({ dice: dice });
     }
 
@@ -143,18 +147,22 @@ class GameArea extends React.Component {
         />;
     }
 
-    newGame() {
-        this.generateRoll();
+    deselectAll() {
         let dice = this.state.dice.slice();
         dice = dice.map(
             (item) => {
                 item.hold = false;
                 return item;
             });
+        this.setState({dice: dice});
+    }
+
+    newGame() {
+        this.generateRoll();
+        this.deselectAll()
         this.setState(
             {
                 scores: Object.values(this.state.scores).map((score) => " "),
-                dice: dice,
                 rollNumber: 1
             }
         )
@@ -166,8 +174,11 @@ class GameArea extends React.Component {
         />;
     }
 
-    updateScore(func, diceVals) {
-        func(diceVals);
+    updateScore(score, func, diceVals) {
+        this.state.scores[score] = func(diceVals);
+        this.state.turnOver = false;
+        this.state.rollNumber = 0;
+        this.deselectAll();
     }
 
     renderScore(score) {
@@ -180,9 +191,10 @@ class GameArea extends React.Component {
             value: this.state.scores[score]
         }
         console.log(this.state.score_refs.score_set[score]);
+        let score_func = this.state.score_refs.score_set[score].getScore;
         return <ScoreRow
             data={data} 
-            onClick={() => this.state.score_refs.score_set[score].getScore(dice_vals)}
+            onClick={() => this.updateScore(score, score_func, dice_vals)}
         />;
     }
 

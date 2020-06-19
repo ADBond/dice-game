@@ -1,8 +1,21 @@
-// placeholder example from React website
+// TODO: split this beast up into sensible chunks
 
 'use strict';
 
 const e = React.createElement;
+
+// utilities
+function arraysEqual(arr1, arr2){
+    if(arr1.length !== arr2.length){
+        return false;
+    }
+    for(let i=0; i < arr1.length; i++){
+        if (arr1[i] !== arr2[i]){
+            return false;
+        }
+    }
+    return true;
+}
 
 function Die(props) {
     return (
@@ -30,7 +43,7 @@ function NewGameButton(props) {
 
 function ScoreRow(props) {
     return (
-        <tr>
+        <tr id={"score-row-" + props.data.score_name}>
             <td>{props.data.score_name}</td>
             <td onClick={() => props.onClick()}>{props.data.value}</td>
         </tr>
@@ -47,9 +60,16 @@ class ScoreType {
         }
     }
 
-    static getScore(diceValues) {
+    getScore(diceValues) {
         throw new Error("Must override getScore method");
     }
+
+    static getCounts(diceValues) {
+        let counts = Array(6).fill(0);
+        diceValues.forEach((die) => counts[die - 1]++);
+        return counts;
+    }
+
 }
 
 class YahtzeeScore extends ScoreType {
@@ -57,8 +77,6 @@ class YahtzeeScore extends ScoreType {
     score_name = "Yahtzee";
 
     getScore(diceValues) {
-        console.log("yaaahh");
-        console.log(diceValues);
         let unique = new Set(diceValues);
         if (unique.size == 1) {
             return 50;
@@ -71,15 +89,35 @@ class ChanceScore extends ScoreType {
     score_name = "Chance";
 
     getScore(diceValues) {
-        console.log("calculate score");
-        console.log(diceValues);
         return diceValues.reduce((x, y) => x + y);
+    }
+
+}
+class FullHouseScore extends ScoreType {
+
+    score_name = "Full House";
+
+    getScore(diceValues) {
+        console.log("yoooo");
+        console.log(this);
+        console.log(diceValues);
+        let counts = ScoreType.getCounts(diceValues);
+        let countVals = [...new Set(counts)];
+        countVals.sort();
+        let desired = [0, 2, 3]
+        console.log(countVals);
+        console.log(desired);
+        if (arraysEqual(countVals, desired)) {
+            return 25;
+        }
+        return 0;
     }
 
 }
 class DiceScores {
     constructor() {
         this.score_set = {
+            "full_house": new FullHouseScore(),
             "yahtzee": new YahtzeeScore(),
             "chance": new ChanceScore()
         };
@@ -97,11 +135,18 @@ class GameArea extends React.Component {
             rollNumber: 1,
             score_refs: new DiceScores(),
             scores: {},
-            turnOver: false
+            turnOver: false,
+            message: ""
         };
         Object.values(this.state.score_refs.getNames()).map((score) => this.state.scores[score] = " ");
     }
 
+    renderMessageAlert() {
+        // TODO: better semantics
+        return <h3>
+            {this.state.message}
+        </h3>
+    }
 
     handleClick(i) {
         const dice = this.state.dice.slice();
@@ -154,7 +199,7 @@ class GameArea extends React.Component {
                 item.hold = false;
                 return item;
             });
-        this.setState({dice: dice});
+        this.setState({ dice: dice });
     }
 
     newGame() {
@@ -175,7 +220,15 @@ class GameArea extends React.Component {
     }
 
     updateScore(score, func, diceVals) {
+        // TODO: messaging system not really set up in a helpful way
+        if (this.state.rollNumber === 0) {
+            this.state.message = "You must roll before entering a score!";
+            return
+        } else {
+            this.state.message = "";
+        }
         this.state.scores[score] = func(diceVals);
+        // TODO: check if we are finished the game!
         this.state.turnOver = false;
         this.state.rollNumber = 0;
         this.deselectAll();
@@ -186,14 +239,16 @@ class GameArea extends React.Component {
             (die) => die.value
         );
         console.log("rendereing");
+        let score_name = this.state.score_refs.score_set[score].score_name;
         let data = {
-            score_name: score,
+            score_name: score_name,
             value: this.state.scores[score]
         }
         console.log(this.state.score_refs.score_set[score]);
         let score_func = this.state.score_refs.score_set[score].getScore;
         return <ScoreRow
-            data={data} 
+            key={score_name}
+            data={data}
             onClick={() => this.updateScore(score, score_func, dice_vals)}
         />;
     }
@@ -203,6 +258,7 @@ class GameArea extends React.Component {
 
         return (
             <div>
+                <div className="alert">{this.renderMessageAlert()}</div>
                 <div className="new-game">{this.renderNewGameButton()}</div>
                 <div className="status">{status}</div>
                 <div className="dice-holder">
@@ -222,9 +278,11 @@ class GameArea extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* TODO: this will be a loop */}
-                            {this.renderScore("yahtzee")}
-                            {this.renderScore("chance")}
+                            {this.state.score_refs.getNames().map(
+                                score => (
+                                    this.renderScore(score)
+                                )
+                            )}
                         </tbody>
                     </table>
                 </div>

@@ -4,42 +4,38 @@
 
 const e = React.createElement;
 
-class Die extends React.Component {
-    render() {
-        if (this.props.value === 6) {
-            console.log("nice");
-        }
-
-        return (
-            <button className="die" onClick={() => this.props.onClick()}>
-                {this.props.value}
-            </button>
-        );
-    }
+function Die(props) {
+    return (
+        <button className={"die die-" + props.data.hold} onClick={() => props.onClick()}>
+            {props.data.value}
+        </button>
+    );
 }
 
-class RollButton extends React.Component {
-    render() {
-        return (
-            <button className="roll-button" onClick={() => this.props.onClick()}>
-                Roll again!
-            </button>
-        );
-    }
+function RollButton(props) {
+    return (
+        <button className="roll-button" onClick={() => props.onClick()}>
+            Roll again!
+        </button>
+    );
 }
 
 class DiceSet extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dice: Array(5).fill(1),
+            dice: Array(5).fill().map(() => ({"value": 1, "hold": false}))
         };
     }
 
 
     handleClick(i) {
         const dice = this.state.dice.slice();
-        dice[i] = 2;
+        console.log(dice);
+        console.log(i);
+        console.log(dice[i]);
+        dice[i].hold = !dice[i].hold;
+        console.log(dice);
         this.setState({ dice: dice });
     }
 
@@ -49,13 +45,20 @@ class DiceSet extends React.Component {
 
     renderDie(i) {
         return <Die
-            value={this.state.dice[i]}
+            data={this.state.dice[i]}
             onClick={() => this.handleClick(i)}
         />;
     }
 
     generateRoll() {
-        const dice = this.state.dice.slice().map(this.randomRoll);
+        let dice = this.state.dice.slice();
+        console.log(dice);
+        dice = dice.map(
+            (item) => {
+                item.value = this.randomRoll();
+                return item;
+            });
+        console.log(dice);
         this.setState({ dice: dice });
     }
 

@@ -20,11 +20,20 @@ function RollButton(props) {
     );
 }
 
+function NewGameButton(props) {
+    return (
+        <button className="new-game-button" onClick={() => props.onClick()}>
+            New game
+        </button>
+    );
+}
+
 class DiceSet extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dice: Array(5).fill().map(() => ({"value": 1, "hold": false}))
+            dice: Array(5).fill().map(() => ({"value": "-", "hold": false})),
+            rollNumber: 0,
         };
     }
 
@@ -40,7 +49,7 @@ class DiceSet extends React.Component {
     }
 
     randomRoll() {
-        return Math.floor(Math.random() * Math.floor(5)) + 1;
+        return Math.floor(Math.random() * 6) + 1;
     }
 
     renderDie(i) {
@@ -51,14 +60,16 @@ class DiceSet extends React.Component {
     }
 
     generateRoll() {
+        if (this.state.rollNumber == 3){
+            return
+        }
+        this.state.rollNumber = this.state.rollNumber + 1;  // being explicit
         let dice = this.state.dice.slice();
-        console.log(dice);
         dice = dice.map(
             (item) => {
-                item.value = this.randomRoll();
+                item.value = item.hold ? item.value : this.randomRoll();
                 return item;
             });
-        console.log(dice);
         this.setState({ dice: dice });
     }
 
@@ -68,11 +79,24 @@ class DiceSet extends React.Component {
         />;
     }
 
+    newGame() {
+        this.state.rollNumber = 0;
+        let dice = Array(5).fill().map(() => ({"value": "-", "hold": false}));
+        this.setState({ dice: dice});
+    }
+
+    renderNewGameButton() {
+        return <NewGameButton
+            onClick={() => this.newGame()}
+        />;
+    }
+
     render() {
-        const status = 'Roll number: 1';
+        const status = 'Roll number: ' + this.state.rollNumber;
 
         return (
             <div>
+                <div className="new-game">{this.renderNewGameButton()}</div>
                 <div className="status">{status}</div>
                 <div className="dice-holder">
                     {this.renderDie(0)}

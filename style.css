@@ -18,3 +18,7 @@
     border: 4px solid #A00;
     line-height: 28px;
   }
+
+.roll-button {
+    clear: both;
+}

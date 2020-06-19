@@ -152,7 +152,10 @@ class FourKindScore extends ScoreType {
 }
 class DiceScores {
     constructor() {
-        this.score_set = {
+        this.top_half = {
+            "aces": new ThreeKindScore()  // TODO: placeholder
+        };
+        this.bottom_half = {
             "three_kind": new ThreeKindScore(),
             "four_kind": new FourKindScore(),
             "full_house": new FullHouseScore(),
@@ -160,8 +163,17 @@ class DiceScores {
             "chance": new ChanceScore()
         };
     }
+    get score_set() {
+        return {...this.top_half, ...this.bottom_half};
+    }
     getNames() {
         return Object.keys(this.score_set);
+    }
+    getTopHalfNames(){
+        return Object.keys(this.top_half)
+    }
+    getBottomHalfNames(){
+        return Object.keys(this.bottom_half)
     }
 }
 
@@ -208,7 +220,7 @@ class GameArea extends React.Component {
     }
 
     generateRoll() {
-        if (this.state.rollNumber === 3 || this.state.turnOver) {
+        if (this.state.turnOver) {
             return
         }
         this.state.rollNumber = this.state.rollNumber + 1;  // being explicit
@@ -218,7 +230,7 @@ class GameArea extends React.Component {
                 item.value = item.hold ? item.value : this.randomRoll();
                 return item;
             });
-        if (this.state.turnOver === 3) {
+        if (this.state.rollNumber === 3) {
             this.state.turnOver = true;
         }
         this.setState({ dice: dice });
@@ -246,7 +258,8 @@ class GameArea extends React.Component {
         this.setState(
             {
                 scores: Object.values(this.state.scores).map((score) => " "),
-                rollNumber: 1
+                rollNumber: 1,
+                turnOver: false
             }
         )
     }
@@ -316,7 +329,17 @@ class GameArea extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.score_refs.getNames().map(
+                            {/* TODO: the score name functions can probably be static, no? */}
+                            {this.state.score_refs.getTopHalfNames().map(
+                                score => (
+                                    this.renderScore(score)
+                                )
+                            )}
+                            <tr>
+                                <th>place</th>
+                                <th>holder</th>
+                            </tr>
+                            {this.state.score_refs.getBottomHalfNames().map(
                                 score => (
                                     this.renderScore(score)
                                 )

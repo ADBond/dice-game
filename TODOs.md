@@ -10,7 +10,14 @@ Generally stuff that I could easily forget when I next come back to this.
 * New game should maybe have a warning (esp. if game is still going)
 * Roll again button should look more change appearance/text after entering a score
 * Some prompt to select a score after
+* Scores should be buttons and feel a bit nicer interacting with
 * (layout needs fixing)
+
+## devvier
+
+* Make it more standard - e.g. remove snake case, check for other bad practices like `var`, `==` etc
+* Split up main file into several smaller modules
+* Check out stuff like minifying etc
 
 
 

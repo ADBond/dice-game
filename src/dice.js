@@ -28,13 +28,80 @@ function NewGameButton(props) {
     );
 }
 
-class DiceSet extends React.Component {
+function ScoreRow(props) {
+    return (
+        <tr className={"score-completed-" + props.data.scored}>
+            <td>{props.data.score_name}</td>
+            <td onClick={() => props.onClick()}>{props.data.value}</td>
+        </tr>
+    )
+}
+
+class ScoreType {
+
+    score_name = "";
+    value = " ";
+
+    constructor() {
+        if (this.constructor == ScoreType) {
+            throw new Error("Can't instantiate abstract ScoreType class");
+        }
+    }
+
+    static getScore(diceValues) {
+        throw new Error("Must override getScore method");
+    }
+}
+
+class YahtzeeScore extends ScoreType {
+
+    score_name = "Yahtzee";
+    scored = false;
+
+    getScore(diceValues) {
+        console.log("yaaahh");
+        console.log(diceValues);
+        let unique = new Set(diceValues);
+        if (unique.size == 1) {
+            this.value = 50;
+        } else {
+            this.value = 0;
+        }
+        this.scored = true;
+    }
+}
+class ChanceScore extends ScoreType {
+
+    score_name = "Chance";
+    scored = false;
+
+    getScore(diceValues) {
+        console.log("calculate score");
+        console.log(diceValues);
+        this.value = diceValues.reduce((x, y) => x + y);
+        this.scored = true;
+    }
+
+}
+class DiceScores {
+    constructor() {
+        this.score_set = {
+            "yahtzee": new YahtzeeScore(),
+            "chance": new ChanceScore()
+        };
+    }
+}
+
+class GameArea extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dice: Array(5).fill().map(() => ({"value": "-", "hold": false})),
+            dice: Array(5).fill().map(() => ({ "value": "-", "hold": false })),
             rollNumber: 0,
+            scores: new DiceScores()
         };
+        //this.generateRoll();
+        console.log(this.state.scores);
     }
 
 
@@ -60,7 +127,7 @@ class DiceSet extends React.Component {
     }
 
     generateRoll() {
-        if (this.state.rollNumber == 3){
+        if (this.state.rollNumber == 3) {
             return
         }
         this.state.rollNumber = this.state.rollNumber + 1;  // being explicit
@@ -81,13 +148,28 @@ class DiceSet extends React.Component {
 
     newGame() {
         this.state.rollNumber = 0;
-        let dice = Array(5).fill().map(() => ({"value": "-", "hold": false}));
-        this.setState({ dice: dice});
+        this.generateRoll();
     }
 
     renderNewGameButton() {
         return <NewGameButton
             onClick={() => this.newGame()}
+        />;
+    }
+
+    updateScore(func, diceVals) {
+        return func(diceVals);
+    }
+
+    renderScore(score) {
+        console.log(this.state.scores.score_set[score]);
+        let score_data = this.state.scores.score_set[score];
+        let dice_vals = this.state.dice.slice().map(
+            (die) => die.value
+        );
+        return <ScoreRow
+            data={score_data} // TODO: how much need we pass?
+            onClick={() => score_data.getScore(dice_vals)}
         />;
     }
 
@@ -106,10 +188,25 @@ class DiceSet extends React.Component {
                     {this.renderDie(4)}
                 </div>
                 {this.renderRollButton()}
+                <div className="score-sheet">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {/* TODO: this will be a loop */}
+                            {this.renderScore("yahtzee")}
+                            {this.renderScore("chance")}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }
 }
 
 const domContainer = document.querySelector('#dice-area');
-ReactDOM.render(e(DiceSet), domContainer);
+ReactDOM.render(e(GameArea), domContainer);

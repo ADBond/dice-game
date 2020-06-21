@@ -3,7 +3,7 @@
 These are *mostly* (but not exclusively) things that are broken, rather than just not implemented yet.
 Generally stuff that I could easily forget when I next come back to this.
 
-* Can overwrite scores
+* ~~Can overwrite scores~~
 * If dice are held, they stay don't roll when we start a new game
 * Messages don't show up when relevant
 * Messages make the rest of the stuff jump about
@@ -11,13 +11,14 @@ Generally stuff that I could easily forget when I next come back to this.
 * Roll again button should look more change appearance/text after entering a score
 * Some prompt to select a score after
 * Scores should be buttons and feel a bit nicer interacting with
+* Currently no indication when game ends
+* Implement subsequent yahtzees/wildcard behaviour?
 * (layout needs fixing)
 
 ## devvier
 
 * Make it more standard - e.g. remove snake case, check for other bad practices like `var`, `==` etc
+* More sensible structuring of classes, which functions are static, etc
 * Split up main file into several smaller modules
 * Check out stuff like minifying etc
-
-
-
+* Maybe some light testing, just to catch any really stupid bits

@@ -258,6 +258,7 @@ class GameArea extends React.Component {
             score_refs: new DiceScores(),
             scores: {},
             turnOver: false,
+            gameFinished: false,
             message: ""
         };
         Object.values(this.state.score_refs.getNames()).map((score) => this.state.scores[score] = " ");
@@ -302,10 +303,10 @@ class GameArea extends React.Component {
                 item.value = item.hold ? item.value : this.randomRoll();
                 return item;
             });
+        this.setState({ dice: dice });
         if (this.state.rollNumber === 3) {
             this.state.turnOver = true;
         }
-        this.setState({ dice: dice });
     }
 
     renderRollButton() {
@@ -334,7 +335,8 @@ class GameArea extends React.Component {
             {
                 scores: scores,
                 rollNumber: 1,
-                turnOver: false
+                turnOver: false,
+                gameFinished: false
             }
         )
     }
@@ -387,7 +389,7 @@ class GameArea extends React.Component {
     get topHalfSub() {
         let score_names = this.state.score_refs.getTopHalfNames();
         let scores = score_names.map((score_name) => this.state.scores[score_name]);
-        if (scores.includes(" ")){
+        if (scores.includes(" ")) {
             return " ";
         }
         return ScoreType.diceSum(scores);
@@ -396,33 +398,34 @@ class GameArea extends React.Component {
     get bottomHalfTotal() {
         let score_names = this.state.score_refs.getBottomHalfNames();
         let scores = score_names.map((score_name) => this.state.scores[score_name]);
-        if (scores.includes(" ")){
+        if (scores.includes(" ")) {
             return " ";
         }
         return ScoreType.diceSum(scores);
     }
 
     get bonus() {
-        if (this.topHalfSub === " "){
+        if (this.topHalfSub === " ") {
             return " ";
         }
-        if (this.topHalfSub >= 63){
+        if (this.topHalfSub >= 63) {
             return 35;
         }
         return 0;
     }
 
     get topHalfTotal() {
-        if (this.bonus !== " "){
+        if (this.bonus !== " ") {
             return this.topHalfSub + this.bonus;
         }
         return " ";
     }
 
     get grandTotal() {
-        if (this.topHalfTotal === " " || this.bottomHalfTotal === " "){
+        if (this.topHalfTotal === " " || this.bottomHalfTotal === " ") {
             return " ";
         }
+        this.gameFinished = true;
         return this.topHalfTotal + this.bottomHalfTotal;
     }
 

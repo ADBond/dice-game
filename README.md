@@ -1,5 +1,6 @@
 # Simple dice game in React
 
+Single static page with a fun dice game implemented in React
 
 ## Install
 

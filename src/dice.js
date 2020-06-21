@@ -52,7 +52,8 @@ function ScoreRow(props) {
 
 class ScoreType {
 
-    score_name = "";
+    // Don't use this, so just allow the error if we try to access it!
+    // score_name = "";  
 
     constructor() {
         if (this.constructor == ScoreType) {
@@ -88,6 +89,39 @@ class ScoreType {
         return counts.reduce(
             (x, y) => Math.max(x, y)
         );
+    }
+}
+
+class NumberScore extends ScoreType {
+    number = ""
+
+    constructor(number) {
+        console.log("Number score " + number);
+        super();
+        this.number = number;
+        this.getScore = this.getScoreGeneric(number);
+    }
+
+    get score_name() {
+        return {
+            1: "Aces",
+            2: "Twos",
+            3: "Threes",
+            4: "Fours",
+            5: "Fives",
+            6: "Sixes" 
+        }[this.number]
+    }
+
+    getScoreGeneric(number) {
+        //return (diceValues) => number * ScoreType.getCounts(diceValues)[number];
+        let func = function(diceValues){
+            console.log(diceValues);
+            console.log("yeaaaaa");
+            console.log(ScoreType.getCounts(diceValues));
+            return number * ScoreType.getCounts(diceValues)[number-1];
+        }
+        return func;
     }
 }
 
@@ -153,7 +187,12 @@ class FourKindScore extends ScoreType {
 class DiceScores {
     constructor() {
         this.top_half = {
-            "aces": new ThreeKindScore()  // TODO: placeholder
+            "aces": new NumberScore(1),
+            "twos": new NumberScore(2),
+            "threes": new NumberScore(3),
+            "fours": new NumberScore(4),
+            "fives": new NumberScore(5),
+            "sixes": new NumberScore(6)
         };
         this.bottom_half = {
             "three_kind": new ThreeKindScore(),

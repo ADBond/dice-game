@@ -384,6 +384,49 @@ class GameArea extends React.Component {
         />;
     }
 
+    get topHalfSub() {
+        let score_names = this.state.score_refs.getTopHalfNames();
+        let scores = score_names.map((score_name) => this.state.scores[score_name]);
+        if (scores.includes(" ")){
+            return " ";
+        }
+        return ScoreType.diceSum(scores);
+    }
+
+    get bottomHalfTotal() {
+        let score_names = this.state.score_refs.getBottomHalfNames();
+        let scores = score_names.map((score_name) => this.state.scores[score_name]);
+        if (scores.includes(" ")){
+            return " ";
+        }
+        return ScoreType.diceSum(scores);
+    }
+
+    get bonus() {
+        if (this.topHalfSub === " "){
+            return " ";
+        }
+        if (this.topHalfSub >= 63){
+            return 35;
+        }
+        return 0;
+    }
+
+    get topHalfTotal() {
+        if (this.bonus !== " "){
+            return this.topHalfSub + this.bonus;
+        }
+        return " ";
+    }
+
+    get grandTotal() {
+        if (this.topHalfTotal === " " || this.bottomHalfTotal === " "){
+            return " ";
+        }
+        return this.topHalfTotal + this.bottomHalfTotal;
+    }
+
+
     render() {
         const status = 'Roll number: ' + this.state.rollNumber;
 
@@ -416,14 +459,30 @@ class GameArea extends React.Component {
                                 )
                             )}
                             <tr>
-                                <th>place</th>
-                                <th>holder</th>
+                                <th>Top Half Sub-total</th>
+                                <th>{this.topHalfSub}</th>
+                            </tr>
+                            <tr>
+                                <th>Bonus</th>
+                                <th>{this.bonus}</th>
+                            </tr>
+                            <tr>
+                                <th>Top Half Total</th>
+                                <th>{this.topHalfTotal}</th>
                             </tr>
                             {this.state.score_refs.getBottomHalfNames().map(
                                 score => (
                                     this.renderScore(score)
                                 )
                             )}
+                            <tr>
+                                <th>Bottom Half Total</th>
+                                <th>{this.bottomHalfTotal}</th>
+                            </tr>
+                            <tr>
+                                <th>Grand Total</th>
+                                <th>{this.grandTotal}</th>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

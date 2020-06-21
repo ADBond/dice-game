@@ -5,12 +5,12 @@
 const e = React.createElement;
 
 // utilities
-function arraysEqual(arr1, arr2){
-    if(arr1.length !== arr2.length){
+function arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
         return false;
     }
-    for(let i=0; i < arr1.length; i++){
-        if (arr1[i] !== arr2[i]){
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
             return false;
         }
     }
@@ -109,17 +109,17 @@ class NumberScore extends ScoreType {
             3: "Threes",
             4: "Fours",
             5: "Fives",
-            6: "Sixes" 
+            6: "Sixes"
         }[this.number]
     }
 
     getScoreGeneric(number) {
         //return (diceValues) => number * ScoreType.getCounts(diceValues)[number];
-        let func = function(diceValues){
+        let func = function (diceValues) {
             console.log(diceValues);
             console.log("yeaaaaa");
             console.log(ScoreType.getCounts(diceValues));
-            return number * ScoreType.getCounts(diceValues)[number-1];
+            return number * ScoreType.getCounts(diceValues)[number - 1];
         }
         return func;
     }
@@ -184,6 +184,37 @@ class FourKindScore extends ScoreType {
     }
 
 }
+
+class SmallStraightScore extends ScoreType {
+
+    score_name = "Small Straight";
+
+    getScore(diceValues) {
+        // TODO: is there a better way? others I can think of off-hand seem kind of convoluted
+        if ((diceValues.includes(3) && diceValues.includes(4)) &&
+            ((diceValues.includes(1) && diceValues.includes(2)) || (diceValues.includes(2) && diceValues.includes(5))
+                || (diceValues.includes(5) && diceValues.includes(6)))
+        ) {
+            return 30;
+        }
+        return 0;
+    }
+}
+class LongStraightScore extends ScoreType {
+
+    score_name = "Long Straight";
+
+    getScore(diceValues) {
+        // TODO: is there a better way? others I can think of off-hand seem kind of convoluted
+        if (diceValues.includes(2) && (diceValues.includes(3) && diceValues.includes(4) && diceValues.includes(5)) &&
+            (diceValues.includes(1) || diceValues.includes(6))
+        ) {
+            return 40;
+        }
+        return 0;
+    }
+}
+
 class DiceScores {
     constructor() {
         this.top_half = {
@@ -198,20 +229,22 @@ class DiceScores {
             "three_kind": new ThreeKindScore(),
             "four_kind": new FourKindScore(),
             "full_house": new FullHouseScore(),
+            "small_straight": new SmallStraightScore(),
+            "long_straight": new LongStraightScore(),
             "yahtzee": new YahtzeeScore(),
             "chance": new ChanceScore()
         };
     }
     get score_set() {
-        return {...this.top_half, ...this.bottom_half};
+        return { ...this.top_half, ...this.bottom_half };
     }
     getNames() {
         return Object.keys(this.score_set);
     }
-    getTopHalfNames(){
+    getTopHalfNames() {
         return Object.keys(this.top_half)
     }
-    getBottomHalfNames(){
+    getBottomHalfNames() {
         return Object.keys(this.bottom_half)
     }
 }
@@ -292,11 +325,14 @@ class GameArea extends React.Component {
     }
 
     newGame() {
+        let scores = {};
+        Object.keys(this.state.scores).map((score) => scores[score] = " ");
+        console.log(scores);
         this.generateRoll();
         this.deselectAll()
         this.setState(
             {
-                scores: Object.values(this.state.scores).map((score) => " "),
+                scores: scores,
                 rollNumber: 1,
                 turnOver: false
             }
@@ -314,7 +350,12 @@ class GameArea extends React.Component {
         if (this.state.rollNumber === 0) {
             this.state.message = "You must roll before entering a score!";
             return
-        } else {
+        } else if (this.state.scores[score] !== " ") {
+            console.log("score is (" + this.state.scores[score] + ")");
+            this.state.message = "You cannot enter the same category of score twice!";
+            return
+        }
+        else {
             this.state.message = "";
         }
         this.state.scores[score] = func(diceVals);

@@ -1,6 +1,7 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 12px;
+  background-color: #eee;
 }
 
 #play-area {
@@ -29,9 +30,30 @@ body {
   line-height: 28px;
 }
 
-/* .roll-button {
-  clear: both;
-} */
+.action-buttons {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  /* padding: 15px 32px; */
+  width: 9em;
+  height: 2.8em;
+  font-size: 2em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+#roll-button {
+  position: fixed;
+  top: 20%;
+  left: 8%;
+  border: 2px solid black;
+}
+#new-game-button {
+  position: fixed;
+  background-color: #605;
+  top: 50%;
+  left: 8%;
+}
 
 table, th, td {
   border: 1px solid black;

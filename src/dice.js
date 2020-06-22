@@ -27,7 +27,7 @@ function Die(props) {
 
 function RollButton(props) {
     return (
-        <button className="roll-button" onClick={() => props.onClick()}>
+        <button className="action-buttons" id="roll-button" onClick={() => props.onClick()}>
             Roll again!
         </button>
     );
@@ -35,7 +35,7 @@ function RollButton(props) {
 
 function NewGameButton(props) {
     return (
-        <button className="new-game-button" onClick={() => props.onClick()}>
+        <button className="action-buttons" id="new-game-button" onClick={() => props.onClick()}>
             New game
         </button>
     );

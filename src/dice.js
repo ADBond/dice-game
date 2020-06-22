@@ -52,9 +52,6 @@ function ScoreRow(props) {
 
 class ScoreType {
 
-    // Don't use this, so just allow the error if we try to access it!
-    // score_name = "";  
-
     constructor() {
         if (this.constructor == ScoreType) {
             throw new Error("Can't instantiate abstract ScoreType class");
@@ -96,7 +93,6 @@ class NumberScore extends ScoreType {
     number = ""
 
     constructor(number) {
-        console.log("Number score " + number);
         super();
         this.number = number;
         this.getScore = this.getScoreGeneric(number);
@@ -114,11 +110,7 @@ class NumberScore extends ScoreType {
     }
 
     getScoreGeneric(number) {
-        //return (diceValues) => number * ScoreType.getCounts(diceValues)[number];
         let func = function (diceValues) {
-            console.log(diceValues);
-            console.log("yeaaaaa");
-            console.log(ScoreType.getCounts(diceValues));
             return number * ScoreType.getCounts(diceValues)[number - 1];
         }
         return func;
@@ -153,6 +145,7 @@ class FullHouseScore extends ScoreType {
         let countVals = ScoreType.getCountVals(diceValues);
         let desired = [0, 2, 3];  // defines full house
         // TODO: should probably let yahtzee be a degenerate full house
+        // although not strictly in specs
         if (arraysEqual(countVals, desired)) {
             return 25;
         }
@@ -273,11 +266,7 @@ class GameArea extends React.Component {
 
     handleClick(i) {
         const dice = this.state.dice.slice();
-        console.log(dice);
-        console.log(i);
-        console.log(dice[i]);
         dice[i].hold = !dice[i].hold;
-        console.log(dice);
         this.setState({ dice: dice });
     }
 
@@ -328,7 +317,6 @@ class GameArea extends React.Component {
     newGame() {
         let scores = {};
         Object.keys(this.state.scores).map((score) => scores[score] = " ");
-        console.log(scores);
         this.generateRoll();
         this.deselectAll()
         this.setState(
@@ -353,7 +341,6 @@ class GameArea extends React.Component {
             this.state.message = "You must roll before entering a score!";
             return
         } else if (this.state.scores[score] !== " ") {
-            console.log("score is (" + this.state.scores[score] + ")");
             this.state.message = "You cannot enter the same category of score twice!";
             return
         }
@@ -371,13 +358,11 @@ class GameArea extends React.Component {
         let dice_vals = this.state.dice.slice().map(
             (die) => die.value
         );
-        console.log("rendereing");
         let score_name = this.state.score_refs.score_set[score].score_name;
         let data = {
             score_name: score_name,
             value: this.state.scores[score]
         }
-        console.log(this.state.score_refs.score_set[score]);
         let score_func = this.state.score_refs.score_set[score].getScore;
         return <ScoreRow
             key={score_name}
@@ -435,7 +420,7 @@ class GameArea extends React.Component {
 
         return (
             <div>
-                <div>
+                <div id="play-area">
                     <div className="new-game">{this.renderNewGameButton()}</div>
                     <div className="status">{status}</div>
                     <div className="dice-holder">

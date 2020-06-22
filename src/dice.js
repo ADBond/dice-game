@@ -45,7 +45,7 @@ function ScoreRow(props) {
     return (
         <tr id={"score-row-" + props.data.score_name}>
             <td>{props.data.score_name}</td>
-            <td onClick={() => props.onClick()}>{props.data.value}</td>
+            <td className="score-value" onClick={() => props.onClick()}>{props.data.value}</td>
         </tr>
     )
 }
@@ -435,19 +435,25 @@ class GameArea extends React.Component {
 
         return (
             <div>
-                <div className="alert">{this.renderMessageAlert()}</div>
-                <div className="new-game">{this.renderNewGameButton()}</div>
-                <div className="status">{status}</div>
-                <div className="dice-holder">
-                    {this.renderDie(0)}
-                    {this.renderDie(1)}
-                    {this.renderDie(2)}
-                    {this.renderDie(3)}
-                    {this.renderDie(4)}
+                <div>
+                    <div className="new-game">{this.renderNewGameButton()}</div>
+                    <div className="status">{status}</div>
+                    <div className="dice-holder">
+                        {this.renderDie(0)}
+                        {this.renderDie(1)}
+                        {this.renderDie(2)}
+                        {this.renderDie(3)}
+                        {this.renderDie(4)}
+                    </div>
+                    {this.renderRollButton()}
+                    <div className="alert">{this.renderMessageAlert()}</div>
                 </div>
-                {this.renderRollButton()}
                 <div className="score-sheet">
-                    <table>
+                    <table id="score-table">
+                        <colgroup>
+                            <col span="1" style={{width: "60%"}}></col>
+                            <col span="1" style={{width: "40%"}}></col>
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>Category</th>

@@ -43,8 +43,8 @@ function NewGameButton(props) {
 
 function ScoreRow(props) {
     return (
-        <tr id={"score-row-" + props.data.score_name}>
-            <td>{props.data.score_name}</td>
+        <tr id={"score-row-" + props.data.scoreName}>
+            <td>{props.data.scoreName}</td>
             <td className="score-value" onClick={() => props.onClick()}>{props.data.value}</td>
         </tr>
     )
@@ -53,7 +53,7 @@ function ScoreRow(props) {
 class ScoreType {
 
     constructor() {
-        if (this.constructor == ScoreType) {
+        if (this.constructor === ScoreType) {
             throw new Error("Can't instantiate abstract ScoreType class");
         }
     }
@@ -98,7 +98,7 @@ class NumberScore extends ScoreType {
         this.getScore = this.getScoreGeneric(number);
     }
 
-    get score_name() {
+    get scoreName() {
         return {
             1: "Aces",
             2: "Twos",
@@ -119,10 +119,10 @@ class NumberScore extends ScoreType {
 
 class YahtzeeScore extends ScoreType {
 
-    score_name = "Yahtzee";
+    scoreName = "Yahtzee";
 
     getScore(diceValues) {
-        if (ScoreType.mostNumerous(diceValues) == 5) {
+        if (ScoreType.mostNumerous(diceValues) === 5) {
             return 50;
         }
         return 0;
@@ -130,7 +130,7 @@ class YahtzeeScore extends ScoreType {
 }
 class ChanceScore extends ScoreType {
 
-    score_name = "Chance";
+    scoreName = "Chance";
 
     getScore(diceValues) {
         return ScoreType.diceSum(diceValues);
@@ -139,7 +139,7 @@ class ChanceScore extends ScoreType {
 }
 class FullHouseScore extends ScoreType {
 
-    score_name = "Full House";
+    scoreName = "Full House";
 
     getScore(diceValues) {
         let countVals = ScoreType.getCountVals(diceValues);
@@ -155,7 +155,7 @@ class FullHouseScore extends ScoreType {
 
 class ThreeKindScore extends ScoreType {
 
-    score_name = "Three of a Kind";
+    scoreName = "Three of a Kind";
 
     getScore(diceValues) {
         if (ScoreType.mostNumerous(diceValues) >= 3) {
@@ -167,7 +167,7 @@ class ThreeKindScore extends ScoreType {
 }
 class FourKindScore extends ScoreType {
 
-    score_name = "Four of a Kind";
+    scoreName = "Four of a Kind";
 
     getScore(diceValues) {
         if (ScoreType.mostNumerous(diceValues) >= 4) {
@@ -180,7 +180,7 @@ class FourKindScore extends ScoreType {
 
 class SmallStraightScore extends ScoreType {
 
-    score_name = "Small Straight";
+    scoreName = "Small Straight";
 
     getScore(diceValues) {
         // TODO: is there a better way? others I can think of off-hand seem kind of convoluted
@@ -195,7 +195,7 @@ class SmallStraightScore extends ScoreType {
 }
 class LongStraightScore extends ScoreType {
 
-    score_name = "Long Straight";
+    scoreName = "Long Straight";
 
     getScore(diceValues) {
         // TODO: is there a better way? others I can think of off-hand seem kind of convoluted
@@ -210,7 +210,7 @@ class LongStraightScore extends ScoreType {
 
 class DiceScores {
     constructor() {
-        this.top_half = {
+        this.topHalf = {
             "aces": new NumberScore(1),
             "twos": new NumberScore(2),
             "threes": new NumberScore(3),
@@ -218,7 +218,7 @@ class DiceScores {
             "fives": new NumberScore(5),
             "sixes": new NumberScore(6)
         };
-        this.bottom_half = {
+        this.bottomHalf = {
             "three_kind": new ThreeKindScore(),
             "four_kind": new FourKindScore(),
             "full_house": new FullHouseScore(),
@@ -228,17 +228,17 @@ class DiceScores {
             "chance": new ChanceScore()
         };
     }
-    get score_set() {
-        return { ...this.top_half, ...this.bottom_half };
+    get scoreSet() {
+        return { ...this.topHalf, ...this.bottomHalf };
     }
     getNames() {
-        return Object.keys(this.score_set);
+        return Object.keys(this.scoreSet);
     }
     getTopHalfNames() {
-        return Object.keys(this.top_half)
+        return Object.keys(this.topHalf)
     }
     getBottomHalfNames() {
-        return Object.keys(this.bottom_half)
+        return Object.keys(this.bottomHalf)
     }
 }
 
@@ -248,13 +248,13 @@ class GameArea extends React.Component {
         this.state = {
             dice: Array(5).fill().map(() => ({ "value": this.randomRoll(), "hold": false })),
             rollNumber: 1,
-            score_refs: new DiceScores(),
+            scoreRefs: new DiceScores(),
             scores: {},
             turnOver: false,
             gameFinished: false,
             message: ""
         };
-        Object.values(this.state.score_refs.getNames()).map((score) => this.state.scores[score] = " ");
+        Object.values(this.state.scoreRefs.getNames()).map((score) => this.state.scores[score] = " ");
     }
 
     renderMessageAlert() {
@@ -264,7 +264,7 @@ class GameArea extends React.Component {
     }
 
     handleDieClick(i) {
-        if([0, 3].includes(this.state.rollNumber)){
+        if ([0, 3].includes(this.state.rollNumber)) {
             return
         }
         const dice = this.state.dice.slice();
@@ -302,8 +302,7 @@ class GameArea extends React.Component {
 
     renderRollButton() {
         let status = "usable";
-        if(this.state.rollNumber == 3){
-            console.log("okay...");
+        if (this.state.rollNumber === 3) {
             status = "unusable";
         }
         return <RollButton
@@ -323,7 +322,7 @@ class GameArea extends React.Component {
     }
 
     newGame() {
-        if(!window.confirm("Are you sure you want to start a new game?")){
+        if (!window.confirm("Are you sure you want to start a new game?")) {
             return
         }
         let scores = {};
@@ -350,14 +349,14 @@ class GameArea extends React.Component {
         // TODO: messaging system not really set up in a helpful way
         if (this.state.rollNumber === 0) {
             console.log("yeah " + this.state.rollNumber);
-            this.setState({message: "You must roll before entering a score!"});
+            this.setState({ message: "You must roll before entering a score!" });
             return
         } else if (this.state.scores[score] !== " ") {
             console.log("yeassaah " + this.state.rollNumber);
-            this.setState({message: "You cannot enter the same category of score twice!"});
+            this.setState({ message: "You cannot enter the same category of score twice!" });
             return
         }
-        this.setState({message: ""});
+        this.setState({ message: "" });
         this.state.scores[score] = func(diceVals);
         // TODO: check if we are finished the game!
         this.state.turnOver = false;
@@ -366,25 +365,25 @@ class GameArea extends React.Component {
     }
 
     renderScore(score) {
-        let dice_vals = this.state.dice.slice().map(
+        let diceVals = this.state.dice.slice().map(
             (die) => die.value
         );
-        let score_name = this.state.score_refs.score_set[score].score_name;
+        let scoreName = this.state.scoreRefs.scoreSet[score].scoreName;
         let data = {
-            score_name: score_name,
+            scoreName: scoreName,
             value: this.state.scores[score]
         }
-        let score_func = this.state.score_refs.score_set[score].getScore;
+        let scoreFunc = this.state.scoreRefs.scoreSet[score].getScore;
         return <ScoreRow
-            key={score_name}
+            key={scoreName}
             data={data}
-            onClick={() => this.updateScore(score, score_func, dice_vals)}
+            onClick={() => this.updateScore(score, scoreFunc, diceVals)}
         />;
     }
 
     get topHalfSub() {
-        let score_names = this.state.score_refs.getTopHalfNames();
-        let scores = score_names.map((score_name) => this.state.scores[score_name]);
+        let scoreNames = this.state.scoreRefs.getTopHalfNames();
+        let scores = scoreNames.map((scoreName) => this.state.scores[scoreName]);
         if (scores.includes(" ")) {
             return " ";
         }
@@ -392,8 +391,8 @@ class GameArea extends React.Component {
     }
 
     get bottomHalfTotal() {
-        let score_names = this.state.score_refs.getBottomHalfNames();
-        let scores = score_names.map((score_name) => this.state.scores[score_name]);
+        let scoreNames = this.state.scoreRefs.getBottomHalfNames();
+        let scores = scoreNames.map((scoreName) => this.state.scores[scoreName]);
         if (scores.includes(" ")) {
             return " ";
         }
@@ -425,14 +424,14 @@ class GameArea extends React.Component {
         return this.topHalfTotal + this.bottomHalfTotal;
     }
 
-    renderStatus(rollNumber){
+    renderStatus(rollNumber) {
         return <h1 id="status">
             {'Roll number:  '} <span id="roll-number">{rollNumber}</span>
         </h1>
     }
 
     render() {
-        if (this.state.rollNumber == 3){
+        if (this.state.rollNumber === 3) {
             this.state.message = "Please select a score category";
         } else {
             this.state.message = "";
@@ -442,22 +441,22 @@ class GameArea extends React.Component {
             <div>
                 <div id="play-area">
                     {this.renderStatus(this.state.rollNumber)}
-                    <div className="dice-holder">
+                    <div id="dice-holder">
                         {this.renderDie(0)}
                         {this.renderDie(1)}
                         {this.renderDie(2)}
                         {this.renderDie(3)}
                         {this.renderDie(4)}
                     </div>
-                    <div className="new-game">{this.renderNewGameButton()}</div>
+                    {this.renderNewGameButton()}
                     {this.renderMessageAlert()}
                     {this.renderRollButton()}
                 </div>
-                <div className="score-sheet">
+                <div id="score-sheet">
                     <table id="score-table">
                         <colgroup>
-                            <col span="1" style={{width: "60%"}}></col>
-                            <col span="1" style={{width: "40%"}}></col>
+                            <col span="1" style={{ width: "60%" }}></col>
+                            <col span="1" style={{ width: "40%" }}></col>
                         </colgroup>
                         <thead>
                             <tr>
@@ -467,7 +466,7 @@ class GameArea extends React.Component {
                         </thead>
                         <tbody>
                             {/* TODO: the score name functions can probably be static, no? */}
-                            {this.state.score_refs.getTopHalfNames().map(
+                            {this.state.scoreRefs.getTopHalfNames().map(
                                 score => (
                                     this.renderScore(score)
                                 )
@@ -484,7 +483,7 @@ class GameArea extends React.Component {
                                 <th>Top Half Total</th>
                                 <th>{this.topHalfTotal}</th>
                             </tr>
-                            {this.state.score_refs.getBottomHalfNames().map(
+                            {this.state.scoreRefs.getBottomHalfNames().map(
                                 score => (
                                     this.renderScore(score)
                                 )

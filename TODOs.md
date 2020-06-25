@@ -21,8 +21,8 @@ Generally stuff that I could easily forget when I next come back to this.
 
 ## devvier
 
-* Make it more standard - e.g. remove snake case, check for other bad practices like `var`, `==` etc
-* A bunch of elements have classes that should really be ids
+* ~~Make it more standard - e.g. remove snake case, check for other bad practices like `var`, `==` etc~~
+* ~~A bunch of elements have classes that should really be ids~~
 * More sensible structuring of classes, which functions are static, etc
 * Split up main file into several smaller modules
 * Check out stuff like minifying etc

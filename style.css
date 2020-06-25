@@ -54,6 +54,17 @@ body {
   top: 50%;
   left: 8%;
 }
+.unusable {
+  background-color: #444;
+}
+
+
+#alert {
+  position: absolute;
+  left: 75%;
+  font-size: 2em;
+  color: #A00;
+}
 
 table, th, td {
   border: 1px solid black;

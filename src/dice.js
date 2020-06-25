@@ -27,7 +27,7 @@ function Die(props) {
 
 function RollButton(props) {
     return (
-        <button className="action-buttons" id="roll-button" onClick={() => props.onClick()}>
+        <button className={"action-buttons " + props.className} id="roll-button" onClick={() => props.onClick()}>
             Roll again!
         </button>
     );
@@ -264,7 +264,10 @@ class GameArea extends React.Component {
         </h3>
     }
 
-    handleClick(i) {
+    handleDieClick(i) {
+        if([0, 3].includes(this.state.rollNumber)){
+            return
+        }
         const dice = this.state.dice.slice();
         dice[i].hold = !dice[i].hold;
         this.setState({ dice: dice });
@@ -277,7 +280,7 @@ class GameArea extends React.Component {
     renderDie(i) {
         return <Die
             data={this.state.dice[i]}
-            onClick={() => this.handleClick(i)}
+            onClick={() => this.handleDieClick(i)}
         />;
     }
 
@@ -299,7 +302,15 @@ class GameArea extends React.Component {
     }
 
     renderRollButton() {
+        console.log("render-rols");
+        console.log(this.state.rollNumber);
+        let status = "usable";
+        if(this.state.rollNumber == 3){
+            console.log("okay...");
+            status = "unusable";
+        }
         return <RollButton
+            className={status}
             onClick={() => this.generateRoll()}
         />;
     }
@@ -317,8 +328,8 @@ class GameArea extends React.Component {
     newGame() {
         let scores = {};
         Object.keys(this.state.scores).map((score) => scores[score] = " ");
+        this.deselectAll();
         this.generateRoll();
-        this.deselectAll()
         this.setState(
             {
                 scores: scores,
@@ -431,7 +442,7 @@ class GameArea extends React.Component {
                         {this.renderDie(4)}
                     </div>
                     {this.renderRollButton()}
-                    <div className="alert">{this.renderMessageAlert()}</div>
+                    <div id="alert">{this.renderMessageAlert()}</div>
                 </div>
                 <div className="score-sheet">
                     <table id="score-table">

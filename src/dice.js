@@ -301,8 +301,6 @@ class GameArea extends React.Component {
     }
 
     renderRollButton() {
-        console.log("render-rols");
-        console.log(this.state.rollNumber);
         let status = "usable";
         if(this.state.rollNumber == 3){
             console.log("okay...");
@@ -351,15 +349,15 @@ class GameArea extends React.Component {
     updateScore(score, func, diceVals) {
         // TODO: messaging system not really set up in a helpful way
         if (this.state.rollNumber === 0) {
-            this.state.message = "You must roll before entering a score!";
+            console.log("yeah " + this.state.rollNumber);
+            this.setState({message: "You must roll before entering a score!"});
             return
         } else if (this.state.scores[score] !== " ") {
-            this.state.message = "You cannot enter the same category of score twice!";
+            console.log("yeassaah " + this.state.rollNumber);
+            this.setState({message: "You cannot enter the same category of score twice!"});
             return
         }
-        else {
-            this.state.message = "";
-        }
+        this.setState({message: ""});
         this.state.scores[score] = func(diceVals);
         // TODO: check if we are finished the game!
         this.state.turnOver = false;
@@ -443,7 +441,6 @@ class GameArea extends React.Component {
         return (
             <div>
                 <div id="play-area">
-                    <div className="new-game">{this.renderNewGameButton()}</div>
                     {this.renderStatus(this.state.rollNumber)}
                     <div className="dice-holder">
                         {this.renderDie(0)}
@@ -452,6 +449,7 @@ class GameArea extends React.Component {
                         {this.renderDie(3)}
                         {this.renderDie(4)}
                     </div>
+                    <div className="new-game">{this.renderNewGameButton()}</div>
                     {this.renderMessageAlert()}
                     {this.renderRollButton()}
                 </div>

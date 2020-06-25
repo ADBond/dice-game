@@ -1,7 +1,7 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 12px;
-  background-color: #eee;
+  background-color: #DDD;
 }
 
 #play-area {
@@ -12,6 +12,7 @@ body {
 .die {
   background: #fff;
   border: 1px solid #999;
+  border-radius: 10px;
   float: left;
   font-size: 2.8em;
   font-weight: bold;
@@ -22,6 +23,16 @@ body {
   padding: 0;
   text-align: center;
   box-shadow: none !important;
+}
+.die:focus {
+  /* border: 2px solid #AA0; */
+  background-color: #E3E3AA;
+  outline: none;
+}
+.die:hover {
+  /* transition-duration: 1.2s; */
+  background-color: #E3E3AA;
+  box-shadow: 0 12px 16px 0 black;
 }
 
 .die-true {
@@ -37,8 +48,8 @@ body {
 .action-buttons {
   background-color: #4CAF50;
   border: none;
+  border-radius: 0.2em;
   color: white;
-  /* padding: 15px 32px; */
   width: 9em;
   height: 2.8em;
   font-size: 2em;

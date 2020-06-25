@@ -15,7 +15,8 @@ Generally stuff that I could easily forget when I next come back to this.
 * Implement subsequent yahtzees/wildcard behaviour?
 * ~~Can hold on roll zero still~~
 * ~~(layout needs fixing)~~
-* layout needs improving
+* ~~layout needs improving~~
+* responsive layout
 * New game after roll #3 doesn't re-roll dice to start
 
 ## devvier

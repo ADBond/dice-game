@@ -258,10 +258,9 @@ class GameArea extends React.Component {
     }
 
     renderMessageAlert() {
-        // TODO: better semantics
-        return <h3>
+        return <div id="alert">
             {this.state.message}
-        </h3>
+        </div>
     }
 
     handleDieClick(i) {
@@ -326,6 +325,9 @@ class GameArea extends React.Component {
     }
 
     newGame() {
+        if(!window.confirm("Are you sure you want to start a new game?")){
+            return
+        }
         let scores = {};
         Object.keys(this.state.scores).map((score) => scores[score] = " ");
         this.deselectAll();
@@ -425,15 +427,24 @@ class GameArea extends React.Component {
         return this.topHalfTotal + this.bottomHalfTotal;
     }
 
+    renderStatus(rollNumber){
+        return <h1 id="status">
+            {'Roll number:  '} <span id="roll-number">{rollNumber}</span>
+        </h1>
+    }
 
     render() {
-        const status = 'Roll number: ' + this.state.rollNumber;
+        if (this.state.rollNumber == 3){
+            this.state.message = "Please select a score category";
+        } else {
+            this.state.message = "";
+        }
 
         return (
             <div>
                 <div id="play-area">
                     <div className="new-game">{this.renderNewGameButton()}</div>
-                    <div className="status">{status}</div>
+                    {this.renderStatus(this.state.rollNumber)}
                     <div className="dice-holder">
                         {this.renderDie(0)}
                         {this.renderDie(1)}
@@ -441,8 +452,8 @@ class GameArea extends React.Component {
                         {this.renderDie(3)}
                         {this.renderDie(4)}
                     </div>
+                    {this.renderMessageAlert()}
                     {this.renderRollButton()}
-                    <div id="alert">{this.renderMessageAlert()}</div>
                 </div>
                 <div className="score-sheet">
                     <table id="score-table">

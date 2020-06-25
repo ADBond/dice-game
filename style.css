@@ -13,21 +13,25 @@ body {
   background: #fff;
   border: 1px solid #999;
   float: left;
-  font-size: 2em;
+  font-size: 2.8em;
   font-weight: bold;
-  line-height: 34px;
-  height: 34px;
+  height: 50px;
+  width: 50px;
   margin-right: 10px;
-  margin-top: 2px;
+  margin-top: 10px;
   padding: 0;
   text-align: center;
-  width: 34px;
   box-shadow: none !important;
 }
 
 .die-true {
   border: 4px solid #A00;
-  line-height: 28px;
+  line-height: 2px;
+}
+.dice-holder {
+  position: fixed;
+  top: 10%;
+  left: 5%;
 }
 
 .action-buttons {
@@ -44,26 +48,40 @@ body {
 }
 #roll-button {
   position: fixed;
-  top: 20%;
+  top: 30%;
   left: 8%;
   border: 2px solid black;
 }
 #new-game-button {
   position: fixed;
   background-color: #605;
-  top: 50%;
+  top: 60%;
   left: 8%;
 }
 .unusable {
   background-color: #444;
 }
-
+#status {
+  position: absolute;
+  text-align: left;
+  left: 7%;
+  top: 1%;
+  font-size: 2em;
+  color: #333;
+}
+#roll-number {
+  color: #A49;
+  font-size: 1.2em;
+}
 
 #alert {
-  position: absolute;
-  left: 75%;
-  font-size: 2em;
+  position: fixed;
+  left: 3%;
+  top: 43%;
+  font-size: 1.8em;
   color: #A00;
+  padding: 0.3em;
+  font-weight: bold;
 }
 
 table, th, td {

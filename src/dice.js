@@ -289,12 +289,13 @@ class GameArea extends React.Component {
         }
         this.state.rollNumber = this.state.rollNumber + 1;  // being explicit
         let dice = this.state.dice.slice();
+        let message = "";
         dice = dice.map(
             (item) => {
                 item.value = item.hold ? item.value : this.randomRoll();
                 return item;
             });
-        this.setState({ dice: dice });
+        this.setState({ dice: dice, message: message });
         if (this.state.rollNumber === 3) {
             this.state.turnOver = true;
         }
@@ -326,17 +327,19 @@ class GameArea extends React.Component {
             return
         }
         let scores = {};
+        let message = "";
         Object.keys(this.state.scores).map((score) => scores[score] = " ");
         this.deselectAll();
-        this.generateRoll();
         this.setState(
             {
                 scores: scores,
-                rollNumber: 1,
+                rollNumber: 0,
                 turnOver: false,
-                gameFinished: false
+                gameFinished: false,
+                message: message
             }
         )
+        //this.generateRoll();
     }
 
     renderNewGameButton() {
@@ -348,20 +351,25 @@ class GameArea extends React.Component {
     updateScore(score, func, diceVals) {
         // TODO: messaging system not really set up in a helpful way
         if (this.state.rollNumber === 0) {
-            console.log("yeah " + this.state.rollNumber);
             this.setState({ message: "You must roll before entering a score!" });
             return
         } else if (this.state.scores[score] !== " ") {
-            console.log("yeassaah " + this.state.rollNumber);
             this.setState({ message: "You cannot enter the same category of score twice!" });
             return
         }
-        this.setState({ message: "" });
         this.state.scores[score] = func(diceVals);
-        // TODO: check if we are finished the game!
+        if (this.gameIsOver()) {
+            this.setState({ message: "Game finished! Well done!" });
+        } else {
+            this.setState({ message: "" });
+        }
         this.state.turnOver = false;
         this.state.rollNumber = 0;
         this.deselectAll();
+    }
+
+    gameIsOver() {
+        return !Object.values(this.state.scores).includes(" ");
     }
 
     renderScore(score) {
@@ -433,8 +441,6 @@ class GameArea extends React.Component {
     render() {
         if (this.state.rollNumber === 3) {
             this.state.message = "Please select a score category";
-        } else {
-            this.state.message = "";
         }
 
         return (

@@ -284,7 +284,7 @@ class GameArea extends React.Component {
     }
 
     generateRoll() {
-        if (this.state.turnOver) {
+        if (this.state.turnOver || this.gameIsOver()) {
             return
         }
         this.state.rollNumber = this.state.rollNumber + 1;  // being explicit
@@ -303,7 +303,7 @@ class GameArea extends React.Component {
 
     renderRollButton() {
         let status = "usable";
-        if (this.state.rollNumber === 3) {
+        if (this.state.rollNumber === 3 || this.gameIsOver()) {
             status = "unusable";
         }
         return <RollButton

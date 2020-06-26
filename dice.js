@@ -500,7 +500,7 @@ var GameArea = function (_React$Component) {
         value: function generateRoll() {
             var _this11 = this;
 
-            if (this.state.turnOver) {
+            if (this.state.turnOver || this.gameIsOver()) {
                 return;
             }
             this.state.rollNumber = this.state.rollNumber + 1; // being explicit
@@ -521,7 +521,7 @@ var GameArea = function (_React$Component) {
             var _this12 = this;
 
             var status = "usable";
-            if (this.state.rollNumber === 3) {
+            if (this.state.rollNumber === 3 || this.gameIsOver()) {
                 status = "unusable";
             }
             return React.createElement(RollButton, {
